@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>simpleheat demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+
+    <style>
+        body { font: 16px/1.4 "Helvetica Neue", Arial, sans-serif; }
+        a { color: #0077ff; }
+        /*.container { width: 320px; height: 512px; margin: 0 auto; position: relative; border: 1px solid #ccc; }*/
+        .options { position: absolute; top: 0; right: 0; padding: 10px; background: rgba(255,255,255,0.6);
+            border-bottom: 1px solid #ccc; border-left: 1px solid #ccc; line-height: 1; }
+        .options input { width: 200px; }
+        .options label { width: 60px; float: left; text-align: right; margin-right: 10px; color: #555; }
+        .ghbtns { position: relative; top: 4px; margin-left: 5px; }
+        canvas#canvas3 {
+            background: url(https://img0.androidappsapk.co/poster/c/d/1/air.com.intel.IntelAppFinder_7.png);
+            background: url(https://lh3.googleusercontent.com/I3SLYLhgI3Yl9hJnGxr-ESA488NmF6eUKmRD4A23UNOpK_z9nuuxS4U3mCLeO-K_2l8=w1920-h974-rw);
+            background-repeat: no-repeat;
+            background-position: top center;
+            background-size: 100%;
+        }
+        .hidden{display: none}
+        .bg-clear{
+            background: #e9e9e9;
+        }
+        #canvas, #canvas2, #canvas3{
+                position: absolute;
+        }
+        .screen{
+            min-width: 360px;
+            min-height: 600px;
+            padding-left: 90px;
+            padding-right: 30px;
+            float: left;
+        }
+        .display{
+            width:320px;
+            height: 600px;
+        }
+        .wide{
+            width: 60%;
+            float: right;
+        }
+        .avoid-clicks {
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-sm navbar-dark bg-primary text-white">
+  <a class="navbar-brand" href="#">onMedia</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="collapsibleNavbar">
+    <!-- <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="#">Link</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Link</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Link</a>
+      </li>    
+    </ul> -->
+  </div>  
+</nav>
+<div class="container-ful">
+    <div class="row">
+        <div class="col-md-12 mt-3 row">
+            <div class="screen">
+
+                <div class="display">
+                    <div class="options hidden">
+                        <label>Radius </label><input type="range" id="radius" value="15" min="10" max="50" /><br />
+                        <label>Blur </label><input type="range" id="blur" value="15" min="10" max="50" />
+                    </div>
+                    <canvas id="canvas3" width="320" height="600"></canvas>
+                    <canvas id="canvas2" width="320" height="600"></canvas>
+                    <canvas id="canvas" width="320" height="600"></canvas>
+                </div>
+
+                <hr>
+                <button onclick="clearData()">Clean data</button>
+                
+            </div>
+
+            <div class="bg-clear wide">
+                
+                <div class="p-3 mb-2 bg-secondary text-white">Support App Report - Overview</div>
+                <div class="p-3 ">Total Record(s): <span class="click text-primary font-weight-bold"></span></div>
+                <div class="p-3 hidden">Red Clicks <span class="redclick"></span></div>
+                <div class="p-3">Time: <span id="timer_div" class="text-danger">20</span> </div>
+                <div class="p-3 ">Clicks time: <span class="click-time text-success"></span></div>
+                
+            </div>
+        </div>     
+         
+    </div>
+    
+</div>
+
+<script src="js/simpleheat.js"></script>
+<script src="js/data.js"></script>
+
+<script type="text/javascript">
+    var seconds_left = 20;
+    var secoundClicked = [];
+    var interval = setInterval(function() {
+        document.getElementById('timer_div').innerHTML = --seconds_left;
+
+        if (seconds_left <= 0)
+        {
+           document.getElementById('timer_div').innerHTML = "You are Ready!";
+           clearInterval(interval);
+           //$('.click-time').text(secoundClicked.shift());
+           $('#canvas, #canvas2').addClass('avoid-clicks');
+        }
+    }, 1000);
+</script>
+
+
+<script>
+
+//add by leo
+// local storage
+
+function clearData(){
+  localStorage.removeItem("savedData");
+  location.reload();
+}
+
+
+var data = [];
+
+if("savedData" in localStorage){
+    data = JSON.parse(localStorage.getItem("savedData"));
+}
+// local storage
+
+window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                               window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+
+function get(id) {
+    return document.getElementById(id);
+}
+
+var heat = simpleheat('canvas').data(data).max(18),
+    frame;
+
+    //add by leo
+    //set rarius
+    heat.radius(15, 15);
+    // heat.radius(6, 2);
+
+function draw() {
+    console.time('draw');
+    heat.draw();
+    console.timeEnd('draw');
+    frame = null;
+}
+
+draw();
+
+// get('canvas').onmousemove = function (e) {
+//     heat.add([e.layerX, e.layerY, 1]);
+//     frame = frame || window.requestAnimationFrame(draw);
+// };
+
+get('canvas').onclick = function (e) {
+    heat.add([e.layerX, e.layerY, 1]);
+    frame = frame || window.requestAnimationFrame(draw);
+
+    //add by leo
+    //adding data to localstorage
+    window.localStorage.setItem('savedData', JSON.stringify(data));
+    sumClick();
+};
+
+var radius = get('radius'),
+    blur = get('blur'),
+    changeType = 'oninput' in radius ? 'oninput' : 'onchange';
+
+radius[changeType] = blur[changeType] = function (e) {
+    heat.radius(+radius.value, +blur.value);
+    frame = frame || window.requestAnimationFrame(draw);
+};
+
+//https://github.com/mourner/simpleheat
+//http://mourner.github.io/simpleheat/demo/
+
+
+//add by leo
+function sumClick(){
+    $('.click').text(data.length);
+    $('.redclick').text(data2.length);
+
+    if(seconds_left){
+        secClik = 20 - seconds_left;
+        console.log(secClik);
+        secoundClicked.push(secClik);
+
+        $('.click-time').text(secoundClicked);
+      
+        
+    }
+    
+}
+sumClick();
+
+
+
+
+
+//creat new canvas to display diferente collor
+//canvas2
+var heat2 = simpleheat('canvas2').data(data2).max(18),
+    frame2;
+
+    //add by leo
+    //set rarius
+    heat2.radius(6, 2);
+   
+
+function draw2() {
+    console.time('draw');
+    heat2.draw2();
+    console.timeEnd('draw');
+    frame2 = null;
+}
+
+draw2();
+
+// get('canvas').onmousemove = function (e) {
+//     heat.add([e.layerX, e.layerY, 1]);
+//     frame = frame || window.requestAnimationFrame(draw);
+// };
+
+get('canvas2').onclick = function (e) {
+    heat2.add([e.layerX, e.layerY, 1]);
+    frame2 = frame2 || window.requestAnimationFrame(draw2);
+
+   
+};
+
+var radius2 = get('radius'),
+    blur2 = get('blur'),
+    changeType2 = 'oninput' in radius2 ? 'oninput' : 'onchange';
+
+radius2[changeType2] = blur2[changeType2] = function (e) {
+    heat2.radius(+radius2.value, +blur2.value);
+    frame2 = frame2 || window.requestAnimationFrame(draw2);
+};
+
+
+
+//newwwwwwwwwwwwwwwwww
+
+
+
+//creat new canvas to display diferente collor
+//canvas3
+var heat3 = simpleheat('canvas3').data(data3).max(18),
+    frame3;
+
+    //add by leo
+    //set rarius
+    heat3.radius(6, 2);
+   
+
+function draw3() {
+    console.time('draw');
+    heat3.draw3();
+    console.timeEnd('draw');
+    frame3 = null;
+}
+
+draw3();
+
+// get('canvas').onmousemove = function (e) {
+//     heat.add([e.layerX, e.layerY, 1]);
+//     frame = frame || window.requestAnimationFrame(draw);
+// };
+
+get('canvas3').onclick = function (e) {
+    heat3.add([e.layerX, e.layerY, 1]);
+    frame3 = frame3 || window.requestAnimationFrame(draw3);
+
+   
+};
+
+var radius3 = get('radius'),
+    blur3 = get('blur'),
+    changeType3 = 'oninput' in radius3 ? 'oninput' : 'onchange';
+
+radius3[changeType3] = blur3[changeType3] = function (e) {
+    heat3.radius(+radius3.value, +blur3.value);
+    frame3 = frame3 || window.requestAnimationFrame(draw3);
+};
+
+
+</script>
+
+</body>
+</html>
